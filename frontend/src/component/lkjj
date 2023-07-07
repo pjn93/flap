@@ -1,0 +1,231 @@
+import React, { useEffect, useState } from "react";
+import {Row} from 'react-bootstrap/';
+import ADD from '../images/add.png'
+import {Paper, Table, TableBody, TableCell, TableContainer, TableHead,
+  TablePagination,
+  TableRow,
+  Card,
+  CardContent,
+} from "@mui/material/";
+import axios from "axios";
+
+const ViewEvent = () => {
+  const [page, setPage] = useState(0);
+  // const [rows, setRows] = useState([]);
+  const [uid, setUid] = useState('');
+const [data, setData] = useState([]);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+
+
+ 
+const fetchData = async () => {
+  const uId = sessionStorage.getItem('uid'); // Retrieve retailer ID from sessionStorage
+  console.log(uId);
+
+  if (uId) {
+    try {
+      const response = await axios.get(`http://localhost:9000/api/viewnews?uid=${uId}`);
+      setData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
+useEffect(() => {
+  const uId = sessionStorage.getItem('uid'); // Retrieve retailer ID from sessionStorage
+  if (uId) {
+    setUid(uId); // Update the state with retailer ID if needed
+    fetchData();
+  }
+}, []);
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+  return (
+    <>
+      <div
+        style={{
+          width: "80%",
+          marginLeft: "130px",
+          marginTop: "5px",
+          height: "490px",
+        }}
+      >
+        <Row style={{ marginTop: "-20px", marginLeft: "0px", width: "100%" }}>
+
+          <input
+            type="text"
+            style={{
+              marginTop: "0px",
+              marginLeft: "812px",
+              width: "200px",
+              height: "40px",
+              border: "1px solid #e3e1e1",
+            }}
+            id="myInput"
+            placeholder="Search for id.."
+            title="Type a id"
+          ></input>
+          {/* </div> */}
+        </Row>
+
+      
+          <Card sx={{ minWidth: 300, p: 2, marginTop: "0px" }}>
+            <CardContent>
+              <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                <TableContainer
+                  sx={{ maxHeight: 400, backgroundColor: "#e6ecf0" }}
+                >
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell align="center">
+                          <h6>
+                            <b>Event Name</b>
+                          </h6>
+                        </TableCell>
+                        
+                        <TableCell align="center">
+                          <h6>
+                            <b>Start Time</b>
+                          </h6>
+                        </TableCell>
+                        <TableCell align="center">
+                          <h6>
+                            <b>End Time</b>
+                          </h6>
+                        </TableCell>
+                        <TableCell align="center">
+                          <h6>
+                            <b>City</b>
+                          </h6>
+                        </TableCell>
+                        <TableCell align="center">
+                          <h6>
+                            <b>Description</b>
+                          </h6>
+                        </TableCell>
+                        
+                        <TableCell align="center">
+                          <h6>
+                            <b>Category</b>
+                          </h6>
+                        </TableCell>
+                        <TableCell align="center">
+                          <h6>
+                            <b>Banner Image</b>
+                          </h6>
+                        </TableCell>
+                        <TableCell align="center">
+                          <h6>
+                            <b>Action</b>
+                          </h6>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {data
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((row) => {
+                          return (
+                            <TableRow
+                              hover
+                              role="checkbox"
+                              tabIndex={-1}
+                              key={row.eventname}
+                            >
+                              <TableCell
+                                align="center"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.eventname}{" "}
+                              </TableCell>
+                             
+                              <TableCell
+                                align="center"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.starttime}{" "}
+                              </TableCell>
+                              <TableCell
+                                align="center"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.endtime}{" "}
+                              </TableCell>
+                              <TableCell
+                                align="center"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.city}{" "}
+                              </TableCell>
+                              <TableCell
+                                align="center"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.description}{" "}
+                              </TableCell>
+                             
+                              <TableCell
+                                align="center"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.category}{" "}
+                              </TableCell>
+                              <TableCell
+                                align="center"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.bannerimage}{" "}
+                              </TableCell>
+                              <TableCell align="center">
+                              
+                                  <span>
+                                    <img
+                                      src={ADD}
+                                      alt="addevent"
+                                      width={25}
+                                      height={25}
+                                    />
+                                   </span>
+                                  
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 15]}
+                  component="div"
+                  count={data.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
+            </CardContent>
+          </Card>
+        {/* </div> */}
+      </div>
+    </>
+  );
+};
+
+export default ViewEvent;
+
